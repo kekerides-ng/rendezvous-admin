@@ -73,8 +73,19 @@ async function proxy(request: NextRequest, path: string[]): Promise<Response> {
 
   const responseHeaders = new Headers();
   upstream.headers.forEach((value, key) => {
-    if (!DROP_FROM_RESPONSE.has(key.toLowerCase())) responseHeaders.append(key, value);
+    if (key.toLowerCase() !== 'set-cookie' && !DROP_FROM_RESPONSE.has(key.toLowerCase()))
+      responseHeaders.append(key, value);
   });
+
+  // The browser calls /api/admin/*, while the backend scopes its cookie to
+  // /admin. Rewrite both issuance and deletion to the browser-visible path.
+  // Keep cookies separate: Expires contains a comma, so joining/splitting loses data.
+  for (const cookie of upstream.headers.getSetCookie()) {
+    responseHeaders.append(
+      'set-cookie',
+      cookie.replace(/(;\s*Path=)\/admin(?=;|$)/i, '$1/api/admin'),
+    );
+  }
 
   return new NextResponse(upstream.body, {
     status: upstream.status,
@@ -84,8 +95,8 @@ async function proxy(request: NextRequest, path: string[]): Promise<Response> {
 }
 
 /**
- * `Set-Cookie` passes through untouched, which is the whole point: the backend
- * sets `httpOnly`, `sameSite: strict`, `path: /admin`, and because the
+ * `Set-Cookie` retains its security attributes; only Path is mapped: the backend
+ * sets `httpOnly`, `sameSite: strict`, `path: /admin`; the browser gets `/api/admin`. Because the
  * response reaches the browser from THIS origin, the browser stores it as
  * first-party.
  */

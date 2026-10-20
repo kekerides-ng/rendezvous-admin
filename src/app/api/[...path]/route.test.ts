@@ -11,13 +11,11 @@ afterEach(() => {
 
 describe('admin API proxy', () => {
   it('preserves pagination, filters and the first-party cookie', async () => {
-    const upstream = vi
-      .fn()
-      .mockResolvedValue(
-        new Response(JSON.stringify({ items: [] }), {
-          headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
-        }),
-      );
+    const upstream = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ items: [] }), {
+        headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+      }),
+    );
     vi.stubGlobal('fetch', upstream);
     const response = await GET(
       new NextRequest('http://localhost:3001/api/admin/users?page=2&status=suspended', {
@@ -36,14 +34,12 @@ describe('admin API proxy', () => {
   });
 
   it('forwards a suspend reason and returns permission errors intact', async () => {
-    const upstream = vi
-      .fn()
-      .mockResolvedValue(
-        new Response(JSON.stringify({ code: 'FORBIDDEN', message: 'Not allowed.' }), {
-          status: 403,
-          headers: { 'content-type': 'application/json' },
-        }),
-      );
+    const upstream = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ code: 'FORBIDDEN', message: 'Not allowed.' }), {
+        status: 403,
+        headers: { 'content-type': 'application/json' },
+      }),
+    );
     vi.stubGlobal('fetch', upstream);
     const response = await POST(
       new NextRequest('http://localhost:3001/api/admin/users/user-id/suspend', {
@@ -64,13 +60,11 @@ describe('admin API proxy', () => {
   it('keeps revealed-phone responses uncached', async () => {
     vi.stubGlobal(
       'fetch',
-      vi
-        .fn()
-        .mockResolvedValue(
-          new Response(JSON.stringify({ phone: '+2348012345678' }), {
-            headers: { 'cache-control': 'no-store' },
-          }),
-        ),
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ phone: '+2348012345678' }), {
+          headers: { 'cache-control': 'no-store' },
+        }),
+      ),
     );
     const response = await POST(
       new NextRequest('http://localhost:3001/api/admin/users/user-id/reveal-phone', {
@@ -80,6 +74,48 @@ describe('admin API proxy', () => {
     );
     expect(response.headers.get('cache-control')).toBe('no-store');
     expect(await response.json()).toEqual({ phone: '+2348012345678' });
+  });
+
+  it('maps session cookies to the browser API path and preserves separate headers', async () => {
+    const headers = new Headers();
+    headers.append(
+      'set-cookie',
+      'rdv_admin_session=test-session; Path=/admin; Expires=Wed, 21 Oct 2026 10:00:00 GMT; HttpOnly; Secure; SameSite=Strict',
+    );
+    headers.append('set-cookie', 'other=value; Path=/; HttpOnly');
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('{}', { headers })));
+    const response = await POST(
+      new NextRequest('http://localhost:3001/api/admin/auth/totp', { method: 'POST' }),
+      context(['admin', 'auth', 'totp']),
+    );
+    expect(response.headers.getSetCookie()).toEqual([
+      'rdv_admin_session=test-session; Path=/api/admin; Expires=Wed, 21 Oct 2026 10:00:00 GMT; HttpOnly; Secure; SameSite=Strict',
+      'other=value; Path=/; HttpOnly',
+    ]);
+  });
+
+  it('maps logout deletion to the same cookie path used at sign-in', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockResolvedValue(
+          new Response(null, {
+            status: 204,
+            headers: {
+              'set-cookie':
+                'rdv_admin_session=; Path=/admin; Expires=Thu, 01 Jan 1970 00:00:00 GMT',
+            },
+          }),
+        ),
+    );
+    const response = await POST(
+      new NextRequest('http://localhost:3001/api/admin/auth/logout', { method: 'POST' }),
+      context(['admin', 'auth', 'logout']),
+    );
+    expect(response.headers.getSetCookie()).toEqual([
+      'rdv_admin_session=; Path=/api/admin; Expires=Thu, 01 Jan 1970 00:00:00 GMT',
+    ]);
   });
 
   it('returns a retryable upstream failure when the backend is unreachable', async () => {

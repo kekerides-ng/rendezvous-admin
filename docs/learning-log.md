@@ -91,3 +91,24 @@ Questions to try while reviewing:
 2. Why does hiding a suspend button not enforce the permission?
 3. Which data should disappear when signing out, and what should happen if the
    logout request fails?
+
+
+## Follow-up — accepted TOTP, but no dashboard
+
+Two independent bugs could bounce a successful sign-in back to login. The
+backend scoped the cookie to `/admin`, while the browser sends requests to
+`/api/admin/*`; first-party storage alone does not make the cookie match that
+path. The proxy now maps the cookie path on both sign-in and logout, forwarding
+individual Set-Cookie headers without losing security flags or expiry dates.
+Earlier tests checked proxy forwarding but did not model browser cookie paths.
+
+The second bug was cached signed-out state. Invalidating `me: null` leaves null
+visible until refetch, and the console immediately redirects that state to login.
+Successful TOTP now cancels old identity requests and seeds the returned profile
+before navigation. Navigation replaces the login history entry. Failed or empty
+responses remain on the form with an error.
+
+Typecheck, lint and 34 admin tests pass, including seven new regressions covering
+cookie issuance/deletion paths, multiple Set-Cookie headers, signed-out cache
+replacement, empty/rejected TOTP responses and the successful screen transition.
+The user's live browser retry remains the final confirmation.

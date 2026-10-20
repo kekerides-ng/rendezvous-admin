@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { ME_KEY, useLogout, useMe } from './use-admin-auth';
+import { ME_KEY, useLogout, useMe, useVerifyTotp } from './use-admin-auth';
 
 const { get, post } = vi.hoisted(() => ({ get: vi.fn(), post: vi.fn() }));
 vi.mock('@/lib/api/client', () => ({ api: { GET: get, POST: post } }));
@@ -23,6 +23,48 @@ beforeEach(() => {
 });
 
 describe('admin session handling', () => {
+  it('replaces cached signed-out state before completing TOTP sign-in', async () => {
+    const { client, Wrapper } = setup();
+    const admin = { id: 'admin', email: 'admin@example.test', role: 'admin' };
+    client.setQueryData(ME_KEY, null);
+    post.mockResolvedValue({ data: admin, response: { ok: true, status: 200 } });
+    const { result } = renderHook(useVerifyTotp, { wrapper: Wrapper });
+    await act(async () => {
+      await result.current.mutateAsync({ challenge: 'challenge', code: '123456' });
+    });
+    expect(client.getQueryData(ME_KEY)).toEqual(admin);
+    expect(get).not.toHaveBeenCalled();
+  });
+
+  it('does not authenticate after a rejected authenticator code', async () => {
+    const { client, Wrapper } = setup();
+    client.setQueryData(ME_KEY, null);
+    post.mockResolvedValue({
+      error: { message: 'That code is wrong or already used.' },
+      response: { ok: false, status: 401 },
+    });
+    const { result } = renderHook(useVerifyTotp, { wrapper: Wrapper });
+    await act(async () => {
+      await expect(
+        result.current.mutateAsync({ challenge: 'challenge', code: '123456' }),
+      ).rejects.toThrow('wrong or already used');
+    });
+    expect(client.getQueryData(ME_KEY)).toBeNull();
+  });
+
+  it('does not accept a successful response without a profile', async () => {
+    const { client, Wrapper } = setup();
+    client.setQueryData(ME_KEY, null);
+    post.mockResolvedValue({ response: { ok: true, status: 200 } });
+    const { result } = renderHook(useVerifyTotp, { wrapper: Wrapper });
+    await act(async () => {
+      await expect(
+        result.current.mutateAsync({ challenge: 'challenge', code: '123456' }),
+      ).rejects.toThrow('Sign-in failed');
+    });
+    expect(client.getQueryData(ME_KEY)).toBeNull();
+  });
+
   it('clears all protected queries and mutation data after logout', async () => {
     const { client, Wrapper } = setup();
     client.setQueryData(ME_KEY, { role: 'admin' });

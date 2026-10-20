@@ -87,7 +87,11 @@ export function LoginScreen() {
                 event.preventDefault();
                 verify.mutate(
                   { challenge, code },
-                  { onSuccess: () => { router.push('/'); } },
+                  {
+                    onSuccess: () => {
+                      router.replace('/');
+                    },
+                  },
                 );
               }}
             >
@@ -95,8 +99,8 @@ export function LoginScreen() {
                 <div className="flex flex-col gap-2 rounded-field bg-primary-faint p-4">
                   <p className="text-label text-ink">Set up two-factor authentication</p>
                   <p className="text-caption text-muted">
-                    Add this key to an authenticator app, then enter the code it shows. You
-                    will need it every time you sign in.
+                    Add this key to an authenticator app, then enter the code it shows. You will
+                    need it every time you sign in.
                   </p>
                   <code className="text-caption text-ink break-all select-all">{secret}</code>
                 </div>

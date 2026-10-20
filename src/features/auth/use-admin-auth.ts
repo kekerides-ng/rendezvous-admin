@@ -33,11 +33,12 @@ export function useMe() {
 export function useLogin() {
   return useMutation({
     mutationFn: async (body: { email: string; password: string }) => {
-      const { data, error } = await api.POST('/admin/auth/login', { body });
+      const { data, error, response } = await api.POST('/admin/auth/login', { body });
       // `error` is typed now that the spec documents 400 and 401 — before the
       // backend declared them, openapi-typescript inferred `never` and every
       // one of these checks was dead code the compiler believed unreachable.
-      if (error) throw new Error(error.message);
+      if (!response.ok || !data)
+        throw new Error(error?.message ?? 'Sign-in failed. Please try again.');
       return data;
     },
   });
@@ -48,13 +49,17 @@ export function useVerifyTotp() {
 
   return useMutation({
     mutationFn: async (body: { challenge: string; code: string }) => {
-      const { data, error } = await api.POST('/admin/auth/totp', { body });
-      if (error) throw new Error(error.message);
+      const { data, error, response } = await api.POST('/admin/auth/totp', { body });
+      if (!response.ok || !data)
+        throw new Error(error?.message ?? 'Sign-in failed. Please try again.');
       return data;
     },
-    // The cookie is now set, so anything that asked "who am I" was answered
-    // before it existed.
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ME_KEY }),
+    // Replace a cached signed-out result before navigating. Invalidating it
+    // leaves null visible until refetch, which makes the console redirect back.
+    onSuccess: async (admin) => {
+      await queryClient.cancelQueries({ queryKey: ME_KEY });
+      queryClient.setQueryData(ME_KEY, admin);
+    },
   });
 }
 
