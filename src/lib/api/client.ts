@@ -14,3 +14,16 @@ export const api = createClient<paths>({
   baseUrl: '/api',
   credentials: 'include',
 });
+
+// Every protected request shares the same expiry behavior, including mutations.
+api.use({
+  onResponse({ response }) {
+    if (
+      response.status === 401 &&
+      typeof window !== 'undefined' &&
+      window.location.pathname !== '/login'
+    ) {
+      window.location.replace('/login');
+    }
+  },
+});

@@ -53,3 +53,41 @@ decorator, then `bun run api:gen` in both front-ends. The spec now declares
 
 Worth remembering: **a spec that documents only the happy path is not
 complete**, and nothing notices until something tries to consume it.
+
+---
+
+## 1.2 (admin UI) — access controls you can review before applying
+
+Added a shared protected console shell and `/users`, connected to generated API
+types through the existing proxy. The screen has server-side pagination, status
+filters, timestamp sort, loading/empty/error states, and reason-required in-page
+suspend/reinstate confirmations. Only admins see those controls; backend role
+checks remain the enforcement. Times are shown in Africa/Lagos.
+
+**Masking is a response contract, not CSS.** The list never contains a full phone
+number. Reveal is a separate audited POST. Its mutation returns no phone data;
+the component alone holds the value until hidden or unmounted, and logout clears
+protected query and mutation caches. The next admin should never see the last
+admin's cached rows.
+
+**The thing most likely to break:** treating every API failure as an expired
+session. Only 401 redirects to login. A 403 remains a permission error, and a 502
+remains retryable. Logout failure is visible rather than pretending the server
+session was revoked.
+
+27 tests pass, covering UI controls, confirmation, privacy, session cleanup and
+proxy forwarding. Typecheck and lint pass. The normal production build could not
+complete here: Turbopack's internal port binding was denied, and webpack could
+not fetch Inter from Google Fonts. Live browser/Postgres acceptance remains in
+STATUS; the build-plan checkbox stays open.
+
+TanStack Table was unavailable and its download failed on restricted DNS. The
+screen uses a semantic native table with server-driven controls for now; all
+requests still use TanStack Query. No dependency or lockfile was fabricated.
+
+Questions to try while reviewing:
+
+1. Why would masking a phone only in rendered text still expose it?
+2. Why does hiding a suspend button not enforce the permission?
+3. Which data should disappear when signing out, and what should happen if the
+   logout request fails?

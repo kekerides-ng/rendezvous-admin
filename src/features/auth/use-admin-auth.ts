@@ -22,7 +22,7 @@ export function useMe() {
       // 401 is the expected answer for a signed-out visitor, not a failure —
       // throwing would make TanStack retry a question already answered.
       if (response.status === 401) return null;
-      if (error) throw new Error(error.message);
+      if (!response.ok || !data) throw new Error(error?.message ?? 'Could not check your session.');
       return data;
     },
     retry: false,
@@ -63,10 +63,16 @@ export function useLogout() {
 
   return useMutation({
     mutationFn: async () => {
-      await api.POST('/admin/auth/logout');
+      const { response } = await api.POST('/admin/auth/logout');
+      if (!response.ok && response.status !== 401)
+        throw new Error('Sign out failed. Please try again.');
     },
     // Reset, not invalidate: refetching after logout asks a question whose
     // answer we already know, and shows a flash of the old identity.
-    onSuccess: () => queryClient.setQueryData(ME_KEY, null),
+    onSuccess: async () => {
+      await queryClient.cancelQueries();
+      queryClient.clear();
+      queryClient.setQueryData(ME_KEY, null);
+    },
   });
 }
