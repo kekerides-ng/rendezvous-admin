@@ -3,7 +3,10 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { LayoutDashboard, UsersRound, LogOut } from 'lucide-react';
 
+import { Brand } from '@/components/ui/brand';
+import { cn } from '@/lib/cn';
 import { Button } from '@/components/ui/button';
 import { useLogout, useMe } from '@/features/auth/use-admin-auth';
 
@@ -39,28 +42,39 @@ export function ConsoleShell({ children }: { children: React.ReactNode }) {
   if (!me) return null;
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-7xl flex-col md:flex-row">
-      <aside className="flex gap-6 border-b border-border bg-surface p-6 md:w-60 md:flex-col md:border-r md:border-b-0">
-        <Link href="/" className="text-label">
-          Rendezvous Admin
+    <div className="mx-auto flex min-h-dvh w-full max-w-[1440px] flex-col gap-6 px-4 md:flex-row md:px-6">
+      <aside className="mt-4 flex flex-col gap-8 rounded-card border border-border bg-surface/95 p-6 shadow-card md:sticky md:top-6 md:my-6 md:h-[calc(100dvh-3rem)] md:w-64 md:shrink-0">
+        <Link href="/" aria-label="Rendezvous Admin dashboard">
+          <Brand />
         </Link>
-        <nav aria-label="Console" className="flex gap-4 md:flex-col">
+        <nav aria-label="Console" className="flex flex-col gap-2">
+          <p className="mb-2 px-4 text-caption text-muted">Workspace</p>
           <Link
             href="/"
             aria-current={pathname === '/' ? 'page' : undefined}
-            className="text-primary"
+            className={cn(
+              'flex min-h-touch items-center gap-3 rounded-button px-4 py-3 text-label transition-colors',
+              pathname === '/'
+                ? 'bg-primary-faint text-primary'
+                : 'text-muted hover:bg-surface-muted hover:text-ink',
+            )}
           >
-            Dashboard
+            <LayoutDashboard className="size-5" aria-hidden="true" /> Dashboard
           </Link>
           <Link
             href="/users"
             aria-current={pathname === '/users' ? 'page' : undefined}
-            className="text-primary"
+            className={cn(
+              'flex min-h-touch items-center gap-3 rounded-button px-4 py-3 text-label transition-colors',
+              pathname === '/users'
+                ? 'bg-primary-faint text-primary'
+                : 'text-muted hover:bg-surface-muted hover:text-ink',
+            )}
           >
-            Users
+            <UsersRound className="size-5" aria-hidden="true" /> Users
           </Link>
         </nav>
-        <div className="ml-auto flex flex-col gap-2 md:mt-auto md:ml-0">
+        <div className="flex flex-col gap-3 border-t border-border pt-6 md:mt-auto">
           <p className="break-all text-caption text-muted">
             {me.email} · {me.role}
           </p>
@@ -80,11 +94,11 @@ export function ConsoleShell({ children }: { children: React.ReactNode }) {
               });
             }}
           >
-            Sign out
+            <LogOut className="size-4" aria-hidden="true" /> Sign out
           </Button>
         </div>
       </aside>
-      <main className="min-w-0 flex-1 p-6 md:p-10">{children}</main>
+      <main className="min-w-0 flex-1 px-2 py-6 md:px-4 md:py-12">{children}</main>
     </div>
   );
 }

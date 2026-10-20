@@ -119,7 +119,11 @@ function Confirmation({
           </p>
         ) : null}
         <div className="mt-4 flex gap-3">
-          <Button type="submit" disabled={!reason.trim() || mutation.isPending}>
+          <Button
+            type="submit"
+            variant={suspend ? 'danger' : 'primary'}
+            disabled={!reason.trim() || mutation.isPending}
+          >
             {mutation.isPending ? 'Saving…' : `Confirm ${action.toLowerCase()}`}
           </Button>
           <Button type="button" variant="ghost" disabled={mutation.isPending} onClick={onClose}>
@@ -241,7 +245,7 @@ export function UsersScreen() {
             <caption className="sr-only">
               Rendezvous users. Phone numbers are masked until revealed.
             </caption>
-            <thead>
+            <thead className="bg-surface-muted">
               <tr className="border-b border-border">
                 <th scope="col" className="p-3">
                   User ID
@@ -288,7 +292,10 @@ export function UsersScreen() {
             </thead>
             <tbody key={JSON.stringify(query)}>
               {users.data.items.map((user) => (
-                <tr key={user.id} className="border-b border-border align-top">
+                <tr
+                  key={user.id}
+                  className="border-b border-border align-top transition-colors hover:bg-primary-faint/40"
+                >
                   <th scope="row" className="max-w-48 break-all p-3 font-normal">
                     {user.id}
                   </th>

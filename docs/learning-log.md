@@ -112,3 +112,21 @@ Typecheck, lint and 34 admin tests pass, including seven new regressions coverin
 cookie issuance/deletion paths, multiple Set-Cookie headers, signed-out cache
 replacement, empty/rejected TOTP responses and the successful screen transition.
 The user's live browser retry remains the final confirmation.
+
+
+## Follow-up — one platform should have one signature
+
+The admin's blue/Inter theme was an intentional implementation choice, but Jaco
+pointed out that it read as a different platform. Replaced it with the web's
+Rendezvous identity: the original app-icon artwork, sampled magenta tokens,
+Plus Jakarta Sans, warm blush/cream background, pill buttons and rounded cards.
+The login, navigation, dashboard and users table now share that language. The
+Admin label and desktop layout provide the distinction; suspend confirmation
+keeps semantic danger styling.
+
+The copied icon is byte-identical to the web original. No logo was redrawn and
+no cross-repo runtime dependency was introduced. Semantic tokens are registered
+with tailwind-merge so component overrides resolve correctly. All 34 existing
+admin tests plus typecheck/lint pass; no new tests were needed for these visual
+changes. Browser automation had no available browser, so live visual review is
+still a user-side check. The shared-brand rule now lives in CLAUDE and D10.

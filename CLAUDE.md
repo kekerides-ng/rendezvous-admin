@@ -10,6 +10,16 @@ Users and KYC review · media and profile moderation · flagged messages · book
 ## Stack
 Next.js (App Router) · TypeScript strict · **Bun** (never npm/pnpm/yarn) · Tailwind · TanStack Query + TanStack Table · `openapi-typescript` + `openapi-fetch` (generated client) · react-hook-form + zod · Vitest + Playwright.
 
+## Visual identity
+The admin is part of Rendezvous, not a separate brand. Use the web app's
+signature: original `web/public/brand/` artwork, magenta palette, Plus Jakarta
+Sans, warm blush/cream page wash, pill CTAs and rounded cards/fields. The web's
+`src/app/globals.css` is the visual reference; mirror brand values in this repo's
+own tokens. Copy original brand assets rather than redrawing the logo. Keep code
+and components independent across repos. Distinguish the console with its
+explicit Admin label, desktop navigation and operational content, never an
+unrelated colour scheme. Use semantic danger styling for destructive actions.
+
 ## Commands
 - `bun install` · `bun run dev` (port 3001) · `bun run build` · `bun run lint` · `bun run typecheck` · `bun run test`
 - `bun run api:gen` — regenerate `src/lib/api/schema.d.ts` from `${NEXT_PUBLIC_API_URL}/docs-json`. Run after every backend API change. Never hand-edit it.

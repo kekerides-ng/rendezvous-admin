@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ShieldCheck } from 'lucide-react';
 
+import { Brand } from '@/components/ui/brand';
 import { Button } from '@/components/ui/button';
 import { Field } from '@/components/ui/field';
 import { useLogin, useVerifyTotp } from './use-admin-auth';
@@ -35,18 +36,24 @@ export function LoginScreen() {
 
   return (
     <main className="flex min-h-dvh items-center justify-center px-6 py-12">
-      <div className="w-full max-w-sm">
-        <div className="mb-8 flex flex-col items-center gap-3 text-center">
-          <span className="flex size-12 items-center justify-center rounded-field bg-primary text-primary-foreground">
-            <ShieldCheck className="size-6" aria-hidden="true" />
-          </span>
-          <h1 className="text-display text-ink">Rendezvous Admin</h1>
-          <p className="text-caption text-muted">
-            Internal console. Every action here is recorded.
-          </p>
+      <div className="w-full max-w-md">
+        <div className="mb-10 flex justify-center">
+          <Brand />
         </div>
-
-        <div className="flex flex-col gap-4 rounded-card border border-border bg-surface p-6">
+        <div className="flex flex-col gap-6 rounded-card border border-border bg-surface p-8 shadow-card">
+          <div className="flex flex-col gap-3">
+            <span className="self-start rounded-pill bg-primary-faint px-3 py-1 text-caption text-primary">
+              Team access
+            </span>
+            <h1 className="text-display text-ink">
+              {challenge ? 'One more step.' : 'Welcome back.'}
+            </h1>
+            <p className="text-body text-muted">
+              {challenge
+                ? 'Confirm it’s you with your authenticator code.'
+                : 'Sign in to look after the Rendezvous community.'}
+            </p>
+          </div>
           {!challenge ? (
             <form
               className="flex flex-col gap-4"
@@ -135,6 +142,10 @@ export function LoginScreen() {
             </form>
           )}
         </div>
+        <p className="mt-6 flex items-center justify-center gap-2 text-caption text-muted">
+          <ShieldCheck className="size-4" aria-hidden="true" /> Restricted to authorised team
+          members.
+        </p>
       </div>
     </main>
   );
