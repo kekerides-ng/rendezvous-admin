@@ -28,7 +28,7 @@ src/
 ```
 
 ## Rules
-1. Only call `/admin/*` endpoints, through `lib/api/client.ts` with generated types.
+1. Only call `/admin/*` endpoints, through `lib/api/client.ts` with generated types, which points at **this app's own `/api/*` route handlers** rather than the backend directly — the session cookie must be first-party (architecture.md §2). Data is fetched with **TanStack Query**, never a bare effect.
 2. Admin session is an httpOnly cookie from the backend (email + password + TOTP). Redirect to `/login` on 401, and to `/2fa` when 2FA is pending.
 3. Show and hide actions by role (`admin`, `moderator`), but the backend is the real enforcement; never rely on the UI alone.
 4. Every destructive action (suspend, refund, delete media, resolve dispute) needs an in-page confirmation step with a required reason, which the backend records in the audit log.

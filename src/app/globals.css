@@ -1,0 +1,54 @@
+@import 'tailwindcss';
+
+/*
+ * The admin console's tokens. Deliberately NOT the user app's warm magenta:
+ * a moderator switching between a user-facing screenshot and the console
+ * should never have to ask which one they are looking at, and a destructive
+ * action taken in the wrong window is the thing to design against.
+ */
+@theme {
+  --color-primary: #1d4ed8;
+  --color-primary-strong: #1e3a8a;
+  --color-primary-faint: #eff6ff;
+  --color-primary-foreground: #ffffff;
+
+  --color-ink: #0f172a;
+  --color-muted: #64748b;
+  --color-subtle: #94a3b8;
+
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8fafc;
+  --color-border: #e2e8f0;
+  --color-page: #f1f5f9;
+
+  --color-success: #16a34a;
+  --color-danger: #dc2626;
+
+  --radius-field: 0.5rem;
+  --radius-card: 0.75rem;
+
+  --text-display: 1.5rem;
+  --text-display--line-height: 1.2;
+  --text-display--font-weight: 700;
+  --text-label: 0.875rem;
+  --text-label--font-weight: 600;
+  --text-body: 0.9375rem;
+  --text-caption: 0.8125rem;
+
+  --spacing-touch: 2.75rem;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  background-color: var(--color-page);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
