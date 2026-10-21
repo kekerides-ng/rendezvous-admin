@@ -148,3 +148,17 @@ Questions to review:
 1. Why must CI install from the committed lockfile?
 2. What can pass locally because of generated files but fail on a fresh clone?
 3. Why does a passing test suite still leave live acceptance work to do?
+
+
+## Step 1.3 checkpoint — KYC policy and review (2026-10-21)
+
+The ID review queue reads only decision metadata and lets staff reject with a required reason. An approve button would bypass provider identity and age proof, so it is intentionally absent. A provider callback is still needed before real cases appear.
+
+Typecheck, lint and tests pass locally. Real Smile ID integration and live
+acceptance are still pending; step 1.3 remains unchecked.
+
+Questions to review:
+
+1. Why is a birthday entered during sign-up insufficient to prove adult status?
+2. Why can a reviewer reject but not manually approve a verification?
+3. What prevents an out-of-order provider result from changing the wrong user's status?
