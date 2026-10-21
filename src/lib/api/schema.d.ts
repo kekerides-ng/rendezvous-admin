@@ -399,6 +399,8 @@ export interface components {
     KycStatusDto: {
       /** @enum {string} */
       status: 'not_started' | 'pending' | 'review' | 'verified' | 'rejected' | 'underage';
+      /** @enum {string} */
+      provider: 'off' | 'youverify';
     };
     KycReviewItemDto: {
       /** Format: uuid */
