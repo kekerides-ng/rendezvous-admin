@@ -130,3 +130,21 @@ with tailwind-merge so component overrides resolve correctly. All 34 existing
 admin tests plus typecheck/lint pass; no new tests were needed for these visual
 changes. Browser automation had no available browser, so live visual review is
 still a user-side check. The shared-brand rule now lives in CLAUDE and D10.
+
+
+## Step 0.6 — app CI (2026-10-21)
+
+The workflow installs frozen dependencies with Bun 1.4.0 on Node 22, then runs
+typecheck, lint and tests as separate failure points. It runs for pull requests,
+main pushes and manual dispatch, with read-only permissions and no app secrets.
+Next.js route types are generated before tsc. A fresh CI checkout has no dev-server output, so relying on local .next files would hide a missing prerequisite. API schema types remain committed, rather than requiring a running backend during checks.
+
+All three apps pass local checks (141 backend, 393 web, 34 admin tests). YAML
+validation passes; hosted Linux installation and services await the first push.
+No deployment or branch protection is configured by this workflow.
+
+Questions to review:
+
+1. Why must CI install from the committed lockfile?
+2. What can pass locally because of generated files but fail on a fresh clone?
+3. Why does a passing test suite still leave live acceptance work to do?
