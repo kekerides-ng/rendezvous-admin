@@ -5,7 +5,7 @@ The **admin console** for the companion platform (Next.js App Router), served on
 Read `docs/architecture.md` (a copy of the backend's master) before designing anything. The current step is in `docs/build-plan.md` (synced from the backend). Jaco is learning as this is built, so explain what you did and why.
 
 ## What admins do here
-Users and KYC review · media and profile moderation · flagged messages · bookings and escrow status · live sessions · reports, SOS events and disputes (propose `resolve()` to the Safe multisig) · refunds and payouts view · reviews moderation · platform settings (fees, categories, limits) · admin users and roles · audit log.
+Users and KYC review · profile management · flagged messages · bookings and escrow status · live sessions · reports, SOS events and disputes (propose `resolve()` to the Safe multisig) · refunds and payouts view · reviews moderation · platform settings (fees, categories, limits) · admin users and roles · audit log.
 
 ## Stack
 Next.js (App Router) · TypeScript strict · **Bun** (never npm/pnpm/yarn) · Tailwind · TanStack Query + TanStack Table · `openapi-typescript` + `openapi-fetch` (generated client) · react-hook-form + zod · Vitest + Playwright.

@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, UsersRound, LogOut, ShieldCheck, Images } from 'lucide-react';
+import { LayoutDashboard, UsersRound, LogOut, ShieldCheck } from 'lucide-react';
 
 import { Brand } from '@/components/ui/brand';
 import { cn } from '@/lib/cn';
@@ -84,18 +84,6 @@ export function ConsoleShell({ children }: { children: React.ReactNode }) {
             )}
           >
             <ShieldCheck className="size-5" aria-hidden="true" /> ID review
-          </Link>
-          <Link
-            href="/media"
-            aria-current={pathname === '/media' ? 'page' : undefined}
-            className={cn(
-              'flex min-h-touch items-center gap-3 rounded-button px-4 py-3 text-label transition-colors',
-              pathname === '/media'
-                ? 'bg-primary-faint text-primary'
-                : 'text-muted hover:bg-surface-muted hover:text-ink',
-            )}
-          >
-            <Images className="size-5" aria-hidden="true" /> Photo review
           </Link>
         </nav>
         <div className="flex flex-col gap-3 border-t border-border pt-6 md:mt-auto">

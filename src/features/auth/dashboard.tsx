@@ -35,7 +35,7 @@ export function Dashboard() {
         </Link>
       </section>
       <p className="text-caption text-muted">
-        KYC, moderation, bookings and disputes will appear here as their modules are built.
+        Profiles, bookings and disputes will appear here as their modules are built.
       </p>
     </div>
   );

@@ -274,7 +274,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List your photo upload and moderation states */
+        /** List your uploaded photos and their availability */
         get: operations["MediaController_mine"];
         put?: never;
         post?: never;
@@ -330,57 +330,6 @@ export interface paths {
         post?: never;
         /** Remove one of your photos */
         delete: operations["MediaController_remove"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admin/media": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List photos awaiting moderation */
-        get: operations["MediaAdminController_queue"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admin/media/{id}/approve": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Approve a photo with an audited reason */
-        post: operations["MediaAdminController_approve"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admin/media/{id}/reject": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Reject a photo with an audited reason */
-        post: operations["MediaAdminController_reject"];
-        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -531,11 +480,10 @@ export interface components {
             /** Format: uuid */
             userId: string;
             /** @enum {string} */
-            status: "uploading" | "pending_review" | "approved" | "rejected";
+            status: "uploading" | "available";
             /** @enum {string} */
             contentType: "image/jpeg" | "image/png" | "image/webp";
             bytes: number;
-            reason: string | null;
             url: string | null;
             /** Format: date-time */
             createdAt: string;
@@ -557,15 +505,6 @@ export interface components {
         };
         RemovedDto: {
             removed: boolean;
-        };
-        MediaQueueDto: {
-            items: components["schemas"]["AssetDto"][];
-            total: number;
-            page: number;
-            pageSize: number;
-        };
-        ReviewDto: {
-            reason: string;
         };
     };
     responses: never;
@@ -1417,168 +1356,6 @@ export interface operations {
             };
             /** @description Error */
             503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiErrorDto"];
-                };
-            };
-        };
-    };
-    MediaAdminController_queue: {
-        parameters: {
-            query?: {
-                pageSize?: number;
-                page?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MediaQueueDto"];
-                };
-            };
-            /** @description The request body failed validation. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiErrorDto"];
-                };
-            };
-            /** @description Not signed in, or the credentials were wrong. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiErrorDto"];
-                };
-            };
-        };
-    };
-    MediaAdminController_approve: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ReviewDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AssetDto"];
-                };
-            };
-            /** @description The request body failed validation. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiErrorDto"];
-                };
-            };
-            /** @description Not signed in, or the credentials were wrong. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiErrorDto"];
-                };
-            };
-            /** @description No such thing. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiErrorDto"];
-                };
-            };
-            /** @description Conflicts with the current state. */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiErrorDto"];
-                };
-            };
-        };
-    };
-    MediaAdminController_reject: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ReviewDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AssetDto"];
-                };
-            };
-            /** @description The request body failed validation. */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiErrorDto"];
-                };
-            };
-            /** @description Not signed in, or the credentials were wrong. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiErrorDto"];
-                };
-            };
-            /** @description No such thing. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiErrorDto"];
-                };
-            };
-            /** @description Conflicts with the current state. */
-            409: {
                 headers: {
                     [name: string]: unknown;
                 };
